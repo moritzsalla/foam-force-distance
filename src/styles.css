@@ -1,0 +1,23 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.canvas {
+  background: black;
+  color: white;
+  outline-color: white;
+  border-color: white;
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+}
+
+.tile {
+  border: 1px solid white;
+  height: 75px;
+  width: 75px;
+  display: grid;
+  place-content: center;
+}
