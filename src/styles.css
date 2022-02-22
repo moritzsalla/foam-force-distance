@@ -2,6 +2,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .canvas {
@@ -17,7 +18,10 @@ body {
 .tile {
   border: 1px solid white;
   height: 75px;
-  width: 75px;
+  width: min-content;
+  height: min-content;
+  background: black;
+  padding: 0.5rem;
   display: grid;
   place-content: center;
 }

@@ -23,12 +23,13 @@ const Canvas = () => {
     }
 
     const simulation = forceSimulation(data.nodes)
-      .force('x', d3.forceX((d) => d.x).strength(0.05))
-      .force('y', d3.forceY((d) => d.y).strength(0.05))
+      .force('charge', d3.forceManyBody())
       .force(
-        'collide',
-        d3.forceCollide((d) => d.r + 1)
-      );
+        'link',
+        d3.forceLink().id((d) => d.id)
+      )
+      .force('x', d3.forceX())
+      .force('y', d3.forceY());
 
     // access data like this: simulation.nodes()
     const handleTick = () => {
@@ -48,8 +49,8 @@ const Canvas = () => {
 
   return (
     <section ref={ref} className='canvas'>
-      {nodes?.map(({ x = 0, y = 0 }, i) => (
-        <Tile key={`node-${i}`} text={`Node ${i}`} x={x} y={y} />
+      {nodes?.map(({ x = 0, y = 0, vy = 0, vx = 0, id }) => (
+        <Tile key={`node-${id}`} text={id} x={x + vx} y={y + vy} />
       ))}
     </section>
   );
