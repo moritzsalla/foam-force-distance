@@ -1,12 +1,12 @@
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
-const Tile = ({ id = "tile", x, y }) => {
+const Tile = ({ text, x, y }) => {
   return (
     <motion.div
-      animate={{ x, y, transform: "translate(-50%, -50%)" }}
-      className="tile"
+      animate={{ x, y, transform: 'translate(-50%, -50%)' }}
+      className='tile'
     >
-      {id}
+      {text}
     </motion.div>
   );
 };

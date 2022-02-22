@@ -1,6 +1,6 @@
 import '../styles.css';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Tile from './Tile';
 
 import * as d3 from 'd3';
@@ -14,6 +14,7 @@ import { data } from '../data/index';
 
 const Canvas = () => {
   const ref = useRef();
+  const [nodes, createNodes] = useState([]); // how many nodes can we store in react state until it becomes unperformant?
 
   useEffect(() => {
     if (!ref) {
@@ -31,21 +32,25 @@ const Canvas = () => {
 
     // access data like this: simulation.nodes()
     const handleTick = () => {
+      createNodes(simulation.nodes());
+      console.log('tick');
       simulation.stop();
-      const nodes = simulation.nodes();
-      console.log(nodes);
     };
     simulation.on('tick', handleTick);
 
     return () => {
-      simulation.stop();
       simulation.on('end', () => console.log('simulation end'));
+      simulation.stop();
     };
   }, []);
 
+  console.log(nodes);
+
   return (
     <section ref={ref} className='canvas'>
-      <Tile x={20} y={100} />
+      {nodes?.map(({ x = 0, y = 0 }, i) => (
+        <Tile key={`node-${i}`} text={`Node ${i}`} x={x} y={y} />
+      ))}
     </section>
   );
 };
