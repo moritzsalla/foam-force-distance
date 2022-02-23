@@ -6,13 +6,29 @@ body {
 }
 
 .canvas {
+  position: relative;
   background: black;
   color: white;
   outline-color: white;
   border-color: white;
   height: 100vh;
-  overflow: hidden;
   width: 100%;
+  overflow: hidden;
+}
+
+.canvas-center {
+  height: 400px;
+  width: 500px;
+  outline: 1px solid red;
+}
+
+.layer-container {
+  height: 100%;
+  width: 100%;
+}
+
+.layer {
+  outline: 1px solid green;
 }
 
 .tile {
@@ -25,3 +41,4 @@ body {
   display: grid;
   place-content: center;
 }
+
