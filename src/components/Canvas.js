@@ -1,12 +1,12 @@
-import '../styles.css';
+import * as d3 from 'd3';
+import { forceSimulation } from 'd3-force';
 
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
-import Tile from './Tile';
-
-import * as d3 from 'd3';
-import { forceSimulation } from 'd3-force';
 import { data } from '../data/index';
+import '../styles.css';
+
+const contains = ({ start, end }, time) => start <= time && time < end;
 
 /**
  * Component state handled by react
@@ -18,31 +18,15 @@ import { data } from '../data/index';
 
 const Canvas = () => {
   const ref = useRef();
-  const [nodes, createNodes] = useState([]); // how many nodes can we store in react state until it becomes unperformant?
+  const [nodes, setNodes] = useState(null); // how many nodes can we store in react state until it becomes unperformant?
 
-  const normalize = d3.scaleLinear().domain([0, 100]).range([-100, 100]);
+  // const normalize = d3.scaleLinear().domain([0, 100]).range([-100, 100]);
 
   useEffect(() => {
     if (!ref) {
       console.error('no ref found');
       return;
     }
-
-    const simulation = forceSimulation(data.nodes)
-      .force('charge', d3.forceManyBody())
-      .force(
-        'link',
-        d3.forceLink().id((d) => d.id)
-      )
-      .force('x', d3.forceX())
-      .force('y', d3.forceY())
-      .force(
-        'collide',
-        d3
-          .forceCollide()
-          .radius((d) => d.r + 10)
-          .iterations(2)
-      );
 
     /**
      * @note access data like this: simulation.nodes()
@@ -53,17 +37,37 @@ const Canvas = () => {
      * vx - the node’s current x-velocity
      * vy - the node’s current y-velocity
      */
-    const handleTick = () => {
+    const ticked = () => {
       const nodes = simulation.nodes();
-      createNodes(nodes);
+      setNodes(nodes);
     };
-    simulation.on('tick', handleTick);
+
+    const simulation = forceSimulation()
+      .nodes(data.nodes)
+      .force('charge', d3.forceManyBody().strength(-30))
+      .force('center', d3.forceCenter(0, 0).strength(0.4))
+      .force(
+        'collide',
+        d3.forceCollide().strength(-0.2).radius(4).iterations(2)
+      )
+      .force(
+        'link',
+        d3
+          .forceLink()
+          .id((d) => d.id) // source, target, value
+          .links(data.links)
+          .strength(0.008)
+      )
+      .force('x', d3.forceX().strength(0.01))
+      .force('y', d3.forceY().strength(0.01))
+      .on('tick', ticked);
 
     return () => {
+      setNodes(null);
       simulation.on('end', () => console.log('simulation end'));
       simulation.stop();
     };
-  }, []);
+  }, [nodes]);
 
   console.log(nodes);
 
@@ -78,12 +82,31 @@ const Canvas = () => {
           window.innerHeight,
         ]}
       >
-        {nodes?.map(({ id, x = 0, y = 0 }) => {
-          return (
-            <motion.g key={`layer-${id}`} class='layer' animate={{ x, y }}>
-              <rect width='5px' height='5px' fill='red' />
+        {nodes?.map(({ id, x, y, vx, vy }) => {
+          const boxWidth = 160;
+          const boxHeight = 40;
 
-              {/* <Tile key={`node-${id}`} text={id} x={x} y={y} /> */}
+          return (
+            <motion.g
+              key={`layer-${id}`}
+              className='layer'
+              style={{ x: x + vx, y: y + vy }}
+            >
+              {/* <foreignObject
+                width={boxWidth}
+                height={boxHeight}
+                x={-boxWidth / 2}
+                y={-boxHeight / 2}
+              >
+                <Tile key={`node-${id}`} text={id} />
+              </foreignObject> */}
+
+              <rect
+                className='center-dot'
+                width='5px'
+                height='5px'
+                fill='red'
+              />
             </motion.g>
           );
         })}
