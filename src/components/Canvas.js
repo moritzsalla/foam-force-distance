@@ -10,6 +10,7 @@ import { data } from '../data/index';
 /**
  * Component state handled by react
  * Positioning/animation handled OUTSIDE OF REACT by framer
+ * @example https://github.com/d3/d3-force
  */
 
 const Canvas = () => {
