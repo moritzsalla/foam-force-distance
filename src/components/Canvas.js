@@ -1,8 +1,9 @@
 import * as d3 from 'd3';
 import { forceSimulation } from 'd3-force';
+
 import { motion } from 'framer-motion';
-import { useEffect } from 'react';
-import { data } from '../data/index';
+import { useEffect, useState } from 'react';
+import { data as dataset } from '../data/index';
 import '../styles.css';
 import Tile from './Tile';
 
@@ -13,37 +14,42 @@ import Tile from './Tile';
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
  * @note D3 mutates original data
  */
-
 const Canvas = () => {
+  const [data, setData] = useState(dataset);
+
   useEffect(() => {
+    // base sim
     const simulation = forceSimulation()
-      .nodes(data.nodes)
       .force('charge', d3.forceManyBody().strength(-50))
       .force('center', d3.forceCenter(0, 0).strength(0.4))
       .force(
         'collide',
-        d3
-          .forceCollide()
-          .strength(-0.2)
-          .radius(10) // component bounds
-          .iterations(2)
-      )
-      .force(
-        'link',
-        d3
-          .forceLink()
-          .id((d) => d.id) // source, target, value
-          .links(data.links)
-          .strength(0.008)
+        d3.forceCollide().strength(-0.2).radius(10).iterations(2)
       )
       .force('x', d3.forceX().strength())
       .force('y', d3.forceY().strength());
 
-    return () => {
-      simulation.on('end', () => console.log('simulation end'));
-      simulation.stop();
-    };
-  }, []);
+    // add nodes
+    setData(({ nodes, links }) => {
+      simulation.nodes(nodes);
+      simulation.force(
+        'link',
+        d3
+          .forceLink()
+          .id((d) => d.id)
+          .links(links)
+          .strength(0.008)
+      );
+      simulation.tick(100); // run 100 frames
+
+      return {
+        nodes,
+        links,
+      };
+    });
+
+    return () => simulation.stop();
+  }, []); // no dependency - run once
 
   return (
     <section className='canvas'>
@@ -57,7 +63,7 @@ const Canvas = () => {
         ]}
       >
         {/* link layer */}
-        {data?.links?.map(({ source, target }, index) => (
+        {data.links?.map(({ source, target }, index) => (
           <line
             key={`link-${index}`}
             className='line-link'
@@ -70,7 +76,7 @@ const Canvas = () => {
         ))}
 
         {/* component layer */}
-        {data?.nodes?.map(({ id, x, y, vx, vy }) => {
+        {data.nodes?.map(({ id, x, y, vx, vy }) => {
           const boxWidth = 160;
           const boxHeight = 40;
 
