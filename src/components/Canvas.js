@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
 import { forceSimulation } from 'd3-force';
-
 import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { data } from '../data/index';
 import '../styles.css';
 import Tile from './Tile';
@@ -16,14 +15,7 @@ import Tile from './Tile';
  */
 
 const Canvas = () => {
-  const ref = useRef();
-
   useEffect(() => {
-    if (!ref) {
-      console.error('no ref found');
-      return;
-    }
-
     const simulation = forceSimulation()
       .nodes(data.nodes)
       .force('charge', d3.forceManyBody().strength(-50))
@@ -54,7 +46,7 @@ const Canvas = () => {
   }, []);
 
   return (
-    <section ref={ref} className='canvas'>
+    <section className='canvas'>
       <svg
         className='layer-container'
         viewBox={[
