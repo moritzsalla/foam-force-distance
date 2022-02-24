@@ -12,26 +12,27 @@ const ZOOM_LEVEL = 1; // you'll probably want to use 1 here
  * Positioning/animation handled OUTSIDE OF REACT by framer
  * @example https://github.com/d3/d3-force
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
- * @note D3 mutates original data
+ * @note D3 is implicit - it mutates original data
  */
 const Canvas = () => {
+  // storing mutated data in ref to persist between renders
   const graphRef = useRef(graphProgram(dataset));
 
-  useEffect(() => graphRef.current.cleanup(), [graphRef]);
+  // cleanup
+  useEffect(() => graphRef.current?.cleanup(), [graphRef]);
+
+  const viewBox = [
+    (-window.innerWidth / 2) * ZOOM_LEVEL,
+    (-window.innerHeight / 2) * ZOOM_LEVEL,
+    window.innerWidth * ZOOM_LEVEL,
+    window.innerHeight * ZOOM_LEVEL,
+  ];
 
   return (
     <section className='canvas'>
-      <svg
-        className='layer-container'
-        viewBox={[
-          (-window.innerWidth / 2) * ZOOM_LEVEL,
-          (-window.innerHeight / 2) * ZOOM_LEVEL,
-          window.innerWidth * ZOOM_LEVEL,
-          window.innerHeight * ZOOM_LEVEL,
-        ]}
-      >
+      <svg className='layer-container' viewBox={viewBox}>
         {/* link layer */}
-        {graphRef.current.links?.map(({ source, target }, index) => (
+        {graphRef.current?.links?.map(({ source, target }, index) => (
           <motion.line
             key={`link-${index}`}
             className='line-link'
@@ -46,7 +47,7 @@ const Canvas = () => {
         ))}
 
         {/* component layer */}
-        {graphRef.current.nodes?.map(({ id, x, y }) => {
+        {graphRef.current?.nodes?.map(({ id, x, y }) => {
           const boxWidth = 200;
           const boxHeight = 200;
 
