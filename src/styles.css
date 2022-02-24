@@ -11,15 +11,9 @@ body {
   color: white;
   outline-color: white;
   border-color: white;
-  height: 100vh;
+  height: 100%;
   width: 100%;
-  overflow: hidden;
-}
-
-.canvas-center {
-  height: 400px;
-  width: 500px;
-  outline: 1px solid red;
+  /* overflow: visible; */
 }
 
 .layer-container {
@@ -41,4 +35,3 @@ body {
   display: grid;
   place-content: center;
 }
-

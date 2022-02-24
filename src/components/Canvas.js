@@ -1,11 +1,11 @@
-import * as d3 from 'd3';
-import { forceSimulation } from 'd3-force';
-
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { data as dataset } from '../data/index';
 import '../styles.css';
+import { graphProgram } from './graphProgram';
 import Tile from './Tile';
+
+const ZOOM_LEVEL = 1; // you'll probably want to use 1 here
 
 /**
  * Component state handled by react
@@ -15,77 +15,43 @@ import Tile from './Tile';
  * @note D3 mutates original data
  */
 const Canvas = () => {
-  const [data, setData] = useState(dataset);
+  const graphRef = useRef(graphProgram(dataset));
 
-  useEffect(() => {
-    // base sim
-    const simulation = forceSimulation()
-      .force('charge', d3.forceManyBody().strength(-50))
-      .force('center', d3.forceCenter(0, 0).strength(0.4))
-      .force(
-        'collide',
-        d3.forceCollide().strength(-0.2).radius(10).iterations(2)
-      )
-      .force('x', d3.forceX().strength())
-      .force('y', d3.forceY().strength());
-
-    // add nodes
-    setData(({ nodes, links }) => {
-      simulation.nodes(nodes);
-      simulation.force(
-        'link',
-        d3
-          .forceLink()
-          .id((d) => d.id)
-          .links(links)
-          .strength(0.008)
-      );
-      simulation.tick(100); // run 100 frames
-
-      return {
-        nodes,
-        links,
-      };
-    });
-
-    return () => simulation.stop();
-  }, []); // no dependency - run once
+  useEffect(() => graphRef.current.cleanup(), [graphRef]);
 
   return (
     <section className='canvas'>
       <svg
         className='layer-container'
         viewBox={[
-          -window.innerWidth / 2,
-          -window.innerHeight / 2,
-          window.innerWidth,
-          window.innerHeight,
+          (-window.innerWidth / 2) * ZOOM_LEVEL,
+          (-window.innerHeight / 2) * ZOOM_LEVEL,
+          window.innerWidth * ZOOM_LEVEL,
+          window.innerHeight * ZOOM_LEVEL,
         ]}
       >
         {/* link layer */}
-        {data.links?.map(({ source, target }, index) => (
-          <line
+        {graphRef.current.links?.map(({ source, target }, index) => (
+          <motion.line
             key={`link-${index}`}
             className='line-link'
             stroke='grey'
-            x1={source.x}
-            y1={source.y}
-            x2={target.x}
-            y2={target.y}
+            animate={{
+              x1: source.x,
+              y1: source.y,
+              x2: target.x,
+              y2: target.y,
+            }}
           />
         ))}
 
         {/* component layer */}
-        {data.nodes?.map(({ id, x, y, vx, vy }) => {
-          const boxWidth = 160;
-          const boxHeight = 40;
+        {graphRef.current.nodes?.map(({ id, x, y }) => {
+          const boxWidth = 200;
+          const boxHeight = 200;
 
           return (
-            <motion.g
-              key={`layer-${id}`}
-              className='layer'
-              style={{ x: x + vx, y: y + vy }}
-            >
+            <motion.g key={`layer-${id}`} className='layer' animate={{ x, y }}>
               <foreignObject
                 width={boxWidth}
                 height={boxHeight}
