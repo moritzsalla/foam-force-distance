@@ -14,7 +14,7 @@ const ZOOM_LEVEL = 1; // you'll probably want to use 1 here
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
  * @note D3 is implicit - it mutates original data
  */
-const Canvas = () => {
+const ReactiveSVGCanvas = () => {
   // storing mutated data in ref to persist between renders
   const graphRef = useRef(graphProgram(dataset));
 
@@ -76,4 +76,4 @@ const Canvas = () => {
   );
 };
 
-export default Canvas;
+export default ReactiveSVGCanvas;
