@@ -6,6 +6,8 @@ import '../styles.css';
 import { graphProgram } from './graphProgram';
 import Tile from './Tile';
 
+const ZOOM_LEVEL = 3;
+
 /**
  * Component state handled by react.
  * Any repeated positioning/animation should be handled outside of react state.
@@ -30,26 +32,26 @@ const ReactiveSVGCanvas = () => {
     y.set(xy[1]);
   });
 
-  // // for 1 / 1 zoom level
+  // for 1 / 1 zoom level
   // const viewBox = [
-  //   -window.innerWidht * .5,
-  //   -window.innerHeight * .5,
-  //   window.innerWidth * 2,
-  //   window.innerHeight * 2,
+  //   -window.innerWidht * 0.5,
+  //   -window.innerHeight * 0.5,
+  //   window.innerWidth,
+  //   window.innerHeight,
   // ];
 
   const viewBox = [
-    -window.innerWidht,
-    -window.innerHeight,
-    window.innerWidth * 2,
-    window.innerHeight * 2,
+    (-window.innerWidth / 2) * ZOOM_LEVEL,
+    (-window.innerHeight / 2) * ZOOM_LEVEL,
+    window.innerWidth * ZOOM_LEVEL,
+    window.innerHeight * ZOOM_LEVEL,
   ];
 
   return (
     <section className='canvas' {...bind()}>
       <motion.div
         className='canvas-draggable-inner'
-        style={{ x: normX, y: normY }}
+        // style={{ x: normX, y: normY }}
       >
         <motion.svg className='svg' viewBox={viewBox}>
           {/* link layer */}

@@ -16,8 +16,8 @@ export const graphProgram = (data) => {
   const simulation = forceSimulation(nodes)
     .stop()
     .force('charge', forceManyBody().strength(-50))
-    // .force('center', forceCenter(0, 0).strength(0.4))
-    .force('collide', forceCollide().strength(4).radius(200).iterations(10))
+    .force('center', forceCenter(0, 0).strength(0.4))
+    .force('collide', forceCollide().strength(1).radius(300).iterations(10))
     .force('x', forceX().strength())
     .force('y', forceY().strength())
     .force(
