@@ -68,13 +68,6 @@ const ReactiveSVGCanvas = () => {
 
     const simulation = forceSimulation()
       .nodes(data.nodes)
-      .force('bounds', () => {
-        for (let i = 0, n = data.nodes.length, node, k = 0.01; i < n; ++i) {
-          node = data.nodes[i];
-          node.vx -= node.x * k;
-          node.vy -= node.y * k;
-        }
-      })
       .force(
         'link',
         forceLink(data.links)
@@ -83,7 +76,13 @@ const ReactiveSVGCanvas = () => {
       )
       .force('charge', forceManyBody().strength(300))
       .force('collide', forceCollide().radius(150).iterations(1))
-      .force('center', forceManyBody().strength(100))
+      .force('bounds', () => {
+        for (let i = 0, n = data.nodes.length, node, k = 0.01; i < n; ++i) {
+          node = data.nodes[i];
+          node.vx -= node.x * k;
+          node.vy -= node.y * k;
+        }
+      })
       .on('tick', ticked);
 
     return () => simulation.stop();
