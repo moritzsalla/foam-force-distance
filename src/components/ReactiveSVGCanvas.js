@@ -62,16 +62,8 @@ const ReactiveSVGCanvas = () => {
       <motion.div className='canvas-draggable-inner'>
         <motion.svg className='svg' viewBox={viewBox}>
           {/* link layer */}
-          {data?.links?.map(({ source, target }, index) => (
-            <line
-              key={`link-${index}`}
-              className='line-link'
-              stroke='white'
-              x1={source.x}
-              y1={source.y}
-              x2={target.x}
-              y2={target.y}
-            />
+          {data?.links?.map((_, index) => (
+            <line key={`link-${index}`} className='line-link' stroke='white' />
           ))}
 
           {/* component layer */}

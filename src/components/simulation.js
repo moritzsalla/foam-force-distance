@@ -9,32 +9,40 @@ import { data } from '../data/';
 import * as d3 from 'd3';
 
 export const d3Sim = () => {
+  // calling forceSimulation class starts similation
   const simulation = forceSimulation()
+    .stop() // stops the simulation
     .nodes(data.nodes)
-    .force('charge', forceManyBody().strength(-300))
-    .force('center', forceManyBody().strength(-50))
-    .force('x', forceX().strength())
-    .force('y', forceY().strength())
     .force(
       'link',
       forceLink(data.links)
         .id((d) => d.id)
         .strength(0.01)
     )
-    .on('tick', () => console.log('tick'));
-
-  const handleUpdate = () => {
-    return d3
-      .selectAll('g')
-      .data(data.nodes)
-      .attr('transform', ({ x, y }) => {
-        return `translate(${x}, ${y})`;
-      });
-  };
+    .force('charge', forceManyBody().strength(-300))
+    .force('center', forceManyBody().strength(-50))
+    .force('x', forceX().strength())
+    .force('y', forceY().strength())
+    .tick(200); // calls the ticker 200 times
+  // .on('tick', () => console.log('tick'));
 
   return {
     data: data,
-    update: handleUpdate,
+
+    update: () => {
+      d3.selectAll('g')
+        .data(data.nodes)
+        .attr('transform', ({ x, y }) => {
+          return `translate(${x}, ${y})`;
+        });
+      d3.selectAll('line')
+        .data(data.links)
+        .attr('x1', ({ source }) => source.x)
+        .attr('y1', ({ source }) => source.y)
+        .attr('x2', ({ target }) => target.x)
+        .attr('y2', ({ target }) => target.y);
+    },
+
     destroy: () => {
       return simulation.stop();
     },
