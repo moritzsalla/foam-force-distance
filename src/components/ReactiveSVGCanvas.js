@@ -1,8 +1,16 @@
+import * as d3 from 'd3';
+import {
+  forceLink,
+  forceManyBody,
+  forceSimulation,
+  forceX,
+  forceY,
+} from 'd3-force';
 import { motion } from 'framer-motion';
-import { createRef, useEffect, useMemo, useRef } from 'react';
+import { useEffect } from 'react';
+import { data } from '../data/';
 import '../styles.css';
 import { Dot } from '../utils/helpers';
-import { d3Sim } from './simulation';
 import Tile from './Tile';
 
 const ZOOM_LEVEL = 2;
@@ -14,32 +22,38 @@ const ZOOM_LEVEL = 2;
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
  */
 const ReactiveSVGCanvas = () => {
-  const {
-    current: { data, update, destroy },
-  } = useRef(d3Sim());
-
-  const nodeRefs = useMemo(() => {
-    const refs = [];
-    /* eslint-disable no-unused-expressions */
-    data?.nodes?.forEach(({ id }) => {
-      refs[id] = createRef(null);
-    });
-    return refs;
-  }, [data]);
-
   useEffect(() => {
-    update(nodeRefs);
-    return () => destroy();
-  }, [nodeRefs, update, destroy]);
+    const ticked = () => {
+      d3.selectAll('g')
+        .data(data.nodes)
+        .attr('transform', ({ x, y }) => {
+          return `translate(${x}, ${y})`;
+        });
 
-  // const x = useSpring(0, { stiffness: 300, damping: 30 });
-  // const y = useSpring(0, { stiffness: 300, damping: 30 });
-  // const normX = useTransform(x, [0, window.innerWidth * 2], [-100, 100]);
-  // const normY = useTransform(y, [0, window.innerHeight * 2], [-100, 100]);
-  // const bind = useDrag(({ xy }) => {
-  //   x.set(xy[0]);
-  //   y.set(xy[1]);
-  // });
+      d3.selectAll('line')
+        .data(data.links)
+        .attr('x1', ({ source }) => source.x)
+        .attr('y1', ({ source }) => source.y)
+        .attr('x2', ({ target }) => target.x)
+        .attr('y2', ({ target }) => target.y);
+    };
+
+    const simulation = forceSimulation()
+      .nodes(data.nodes)
+      .force(
+        'link',
+        forceLink(data.links)
+          .id((d) => d.id)
+          .strength(0.01)
+      )
+      .force('charge', forceManyBody().strength(-300))
+      .force('center', forceManyBody().strength(-50))
+      .force('x', forceX().strength())
+      .force('y', forceY().strength())
+      .on('tick', ticked);
+
+    return () => simulation.stop();
+  }, []);
 
   const viewBox = [
     -window.innerWidth * 0.5 * ZOOM_LEVEL,
@@ -62,22 +76,11 @@ const ReactiveSVGCanvas = () => {
             const boxWidth = 200;
             const boxHeight = 200;
 
-            /**
-             * @todo
-             * In the future, react components will be rendered
-             * conditionally based on data in data.nodes.
-             * Possible targets are next images, podcast players, text
-             * and other components.
-             */
             return (
-              <motion.g
-                key={`layer-${index}`}
-                ref={nodeRefs[id]}
-                className='layer'
-              >
+              <motion.g key={`layer-${index}`} className='layer'>
                 <foreignObject
-                  x={-boxWidth / 2}
-                  y={-boxHeight / 2}
+                  x={-boxWidth * 0.5}
+                  y={-boxHeight * 0.5}
                   width={boxWidth}
                   height={boxHeight}
                 >
