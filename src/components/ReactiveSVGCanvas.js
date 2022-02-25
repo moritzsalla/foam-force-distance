@@ -1,28 +1,17 @@
 import { motion } from 'framer-motion';
 import { createRef, useEffect, useMemo, useRef } from 'react';
 import '../styles.css';
+import { Dot } from '../utils/helpers';
 import { d3Sim } from './simulation';
 import Tile from './Tile';
 
 const ZOOM_LEVEL = 2;
-
-const Dot = ({ d = 20 }) => (
-  <rect
-    className='center-dot'
-    width={d}
-    height={d}
-    fill='red'
-    x={-d / 2}
-    y={-d / 2}
-  />
-);
 
 /**
  * Component state handled by react.
  * Any repeated positioning/animation should be handled outside of react state.
  * @example https://github.com/d3/d3-force
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
- * @note D3 works implicitly
  */
 const ReactiveSVGCanvas = () => {
   const {
@@ -70,10 +59,7 @@ const ReactiveSVGCanvas = () => {
 
   return (
     <section className='canvas'>
-      <motion.div
-        className='canvas-draggable-inner'
-        // style={{ x: normX, y: normY }}
-      >
+      <motion.div className='canvas-draggable-inner'>
         <motion.svg className='svg' viewBox={viewBox}>
           {/* link layer */}
           {data?.links?.map(({ source, target }, index) => (
