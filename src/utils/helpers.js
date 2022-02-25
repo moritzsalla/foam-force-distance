@@ -35,3 +35,7 @@ export const drag = (simulation) => {
     .on('drag', dragged)
     .on('end', dragended);
 };
+
+export const zoomed = ({ elem, transform }) => {
+  elem.attr('transform', transform);
+};

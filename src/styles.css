@@ -29,7 +29,6 @@ body {
 }
 
 .tile {
-  cursor: grab;
   box-sizing: border-box;
   border: thin solid white;
   background: black;

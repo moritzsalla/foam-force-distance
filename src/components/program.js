@@ -1,4 +1,5 @@
 import * as d3 from 'd3';
+import { svg } from 'd3';
 import {
   forceCenter,
   forceCollide,
@@ -7,18 +8,21 @@ import {
   forceSimulation,
 } from 'd3-force';
 import { data } from '../data/';
-import { drag } from '../utils/helpers';
+import { drag, zoomed } from '../utils/helpers';
 
 const program = () => {
   const ticked = () => {
-    d3.selectAll('g')
+    // ------ group layer ------
+
+    d3.selectAll('g.layer')
       .data(data.nodes)
       .attr('transform', ({ x, y }) => {
         return `translate(${x}, ${y})`;
-      })
-      .call(drag(simulation));
+      });
 
-    d3.selectAll('line')
+    // ------ line layer ------
+
+    d3.selectAll('line.line-link')
       .data(data.links)
       .attr('x1', ({ source }) => source.x)
       .attr('y1', ({ source }) => source.y)
@@ -26,9 +30,35 @@ const program = () => {
       .attr('y2', ({ target }) => target.y)
       .style('stroke', function ({ value }) {
         return value === 0 ? 'red' : 'white';
-      })
-      .call(drag(simulation));
+      });
   };
+
+  // ------ svg ------
+  // https://observablehq.com/@d3/drag-zoom?collection=@d3/d3-drag
+  d3.select('svg')
+    .attr('viewBox', [
+      -window.innerWidth * 0.5,
+      -window.innerHeight * 0.5,
+      window.innerWidth,
+      window.innerHeight,
+    ])
+    .call(
+      d3
+        .zoom()
+        .extent([
+          [0, 0],
+          [
+            -window.innerWidth * 0.5,
+            -window.innerHeight * 0.5,
+            window.innerWidth,
+            window.innerHeight,
+          ],
+        ])
+        .scaleExtent([1, 8])
+        .on('zoom', ({ transform }) => {
+          d3.select('g.inner-container').attr('transform', transform);
+        })
+    );
 
   const simulation = forceSimulation()
     .nodes(data.nodes)
