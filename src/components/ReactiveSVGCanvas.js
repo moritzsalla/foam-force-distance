@@ -61,7 +61,7 @@ const ReactiveSVGCanvas = () => {
         .attr('x2', ({ target }) => target.x)
         .attr('y2', ({ target }) => target.y)
         .style('stroke', function ({ value }) {
-          return value < 0.5 ? 'red' : 'white';
+          return value === 1 ? 'red' : 'white';
         })
         .call(drag(simulation));
     };
@@ -106,7 +106,7 @@ const ReactiveSVGCanvas = () => {
           ))}
 
           {/* component layer */}
-          {data?.nodes?.map(({ id }, index) => {
+          {data?.nodes?.map(({ id, group, ...props }, index) => {
             const boxWidth = 100;
             const boxHeight = 100;
 
@@ -118,7 +118,7 @@ const ReactiveSVGCanvas = () => {
                   width={boxWidth}
                   height={boxHeight}
                 >
-                  <Tile key={`node-${id}`} />
+                  <Tile key={`node-${id}`} text={group} />
                 </foreignObject>
               </motion.g>
             );
