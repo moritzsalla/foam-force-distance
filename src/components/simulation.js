@@ -11,32 +11,25 @@ import * as d3 from 'd3';
 export const d3Sim = () => {
   const simulation = forceSimulation()
     .nodes(data.nodes)
-    .force('charge', forceManyBody().strength(-50))
+    .force('charge', forceManyBody().strength(-300))
     .force('center', forceManyBody().strength(-50))
     .force('x', forceX().strength())
     .force('y', forceY().strength())
     .force(
       'link',
-      forceLink()
+      forceLink(data.links)
         .id((d) => d.id)
         .strength(0.01)
-    );
-  // .on('tick', () => console.log('tick'));
+    )
+    .on('tick', () => console.log('tick'));
 
-  const handleUpdate = (nodes) => {
-    if (!nodes) throw RangeError('nodes is undefined');
-
-    const elems = nodes.map(({ current }) => {
-      return current;
-    });
-
-    // return d3
-    //   .selectAll(elems)
-    //   .data(data.nodes)
-    //   .text((d, i) => {
-    //     console.log(d);
-    //     return '';
-    //   });
+  const handleUpdate = () => {
+    return d3
+      .selectAll('g')
+      .data(data.nodes)
+      .attr('transform', ({ x, y }) => {
+        return `translate(${x}, ${y})`;
+      });
   };
 
   return {

@@ -4,7 +4,7 @@ import '../styles.css';
 import { d3Sim } from './simulation';
 import Tile from './Tile';
 
-const ZOOM_LEVEL = 3;
+const ZOOM_LEVEL = 2;
 
 const Dot = ({ d = 20 }) => (
   <rect
@@ -39,7 +39,7 @@ const ReactiveSVGCanvas = () => {
   }, [data]);
 
   useEffect(() => {
-    update(nodeRefs);
+    update();
     return () => destroy();
   }, [nodeRefs, update, destroy]);
 
@@ -80,7 +80,7 @@ const ReactiveSVGCanvas = () => {
             <line
               key={`link-${index}`}
               className='line-link'
-              stroke='grey'
+              stroke='white'
               x1={source.x}
               y1={source.y}
               x2={target.x}
@@ -89,7 +89,7 @@ const ReactiveSVGCanvas = () => {
           ))}
 
           {/* component layer */}
-          {data?.nodes?.map(({ id, x, y }, index) => {
+          {data?.nodes?.map(({ id }, index) => {
             const boxWidth = 200;
             const boxHeight = 200;
             return (

@@ -15,7 +15,6 @@ body {
   width: 100vw;
   outline: 1px solid red;
   overflow: hidden;
-  /* overflow: visible; */
 }
 
 .canvas-draggable-inner {
@@ -27,10 +26,6 @@ body {
 .svg {
   height: 100vh;
   width: 100vw;
-}
-
-.layer {
-  /* outline: 1px solid green; */
 }
 
 .tile {
