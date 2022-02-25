@@ -36,23 +36,14 @@ const ReactiveSVGCanvas = () => {
   // const y = useSpring(0, { stiffness: 300, damping: 30 });
   // const normX = useTransform(x, [0, window.innerWidth * 2], [-100, 100]);
   // const normY = useTransform(y, [0, window.innerHeight * 2], [-100, 100]);
-
   // const bind = useDrag(({ xy }) => {
   //   x.set(xy[0]);
   //   y.set(xy[1]);
   // });
 
-  // for 1 / 1 zoom level
-  // const viewBox = [
-  //   -window.innerWidht * 0.5,
-  //   -window.innerHeight * 0.5,
-  //   window.innerWidth,
-  //   window.innerHeight,
-  // ];
-
   const viewBox = [
-    (-window.innerWidth / 2) * ZOOM_LEVEL,
-    (-window.innerHeight / 2) * ZOOM_LEVEL,
+    -window.innerWidth * 0.5 * ZOOM_LEVEL,
+    -window.innerHeight * 0.5 * ZOOM_LEVEL,
     window.innerWidth * ZOOM_LEVEL,
     window.innerHeight * ZOOM_LEVEL,
   ];
@@ -74,9 +65,9 @@ const ReactiveSVGCanvas = () => {
             /**
              * @todo
              * In the future, react components will be rendered
-             * *conditionally* based on data in data.nodes.
+             * conditionally based on data in data.nodes.
              * Possible targets are next images, podcast players, text
-             * and other react components.
+             * and other components.
              */
             return (
               <motion.g
