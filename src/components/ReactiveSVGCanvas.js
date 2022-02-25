@@ -1,14 +1,8 @@
-import * as d3 from 'd3';
-import {
-  forceCollide,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-} from 'd3-force';
 import { useEffect } from 'react';
-import { data } from '../data/';
 import '../styles.css';
+import program from './program';
 import Tile from './Tile';
+import { data } from '../data/';
 
 const ZOOM_LEVEL = 1;
 
@@ -20,71 +14,8 @@ const ZOOM_LEVEL = 1;
  */
 const ReactiveSVGCanvas = () => {
   useEffect(() => {
-    const drag = (simulation) => {
-      function dragstarted(event, d) {
-        if (!event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-      }
-
-      function dragged(event, d) {
-        d.fx = event.x;
-        d.fy = event.y;
-      }
-
-      function dragended(event, d) {
-        if (!event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-      }
-
-      return d3
-        .drag()
-        .on('start', dragstarted)
-        .on('drag', dragged)
-        .on('end', dragended);
-    };
-
-    const ticked = () => {
-      d3.selectAll('g')
-        .data(data.nodes)
-        .attr('transform', ({ x, y }) => {
-          return `translate(${x}, ${y})`;
-        })
-        .call(drag(simulation));
-
-      d3.selectAll('line')
-        .data(data.links)
-        .attr('x1', ({ source }) => source.x)
-        .attr('y1', ({ source }) => source.y)
-        .attr('x2', ({ target }) => target.x)
-        .attr('y2', ({ target }) => target.y)
-        .style('stroke', function ({ value }) {
-          return value === 1 ? 'red' : 'white';
-        })
-        .call(drag(simulation));
-    };
-
-    const simulation = forceSimulation()
-      .nodes(data.nodes)
-      .force(
-        'link',
-        forceLink(data.links)
-          .id((d) => d.id)
-          .strength(0.01)
-      )
-      .force('charge', forceManyBody().strength(300))
-      .force('collide', forceCollide().radius(150).iterations(1))
-      .force('bounds', () => {
-        for (let i = 0, n = data.nodes.length, node, k = 0.01; i < n; ++i) {
-          node = data.nodes[i];
-          node.vx -= node.x * k;
-          node.vy -= node.y * k;
-        }
-      })
-      .on('tick', ticked);
-
-    return () => simulation.stop();
+    program();
+    return () => program.destroy();
   }, []);
 
   const viewBox = [
