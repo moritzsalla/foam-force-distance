@@ -8,8 +8,8 @@ import Tile from './Tile';
 const ZOOM_LEVEL = 2;
 
 /**
- * Component state handled by react.
- * Any repeated positioning/animation should be handled outside of react state.
+ * D3 simulation rendering react components.
+ * @note goal is to outsource the position updates to the simulation
  * @example https://github.com/d3/d3-force
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
  */
@@ -70,6 +70,14 @@ const ReactiveSVGCanvas = () => {
           {data?.nodes?.map(({ id }, index) => {
             const boxWidth = 200;
             const boxHeight = 200;
+
+            /**
+             * @todo
+             * In the future, react components will be rendered
+             * *conditionally* based on data in data.nodes.
+             * Possible targets are next images, podcast players, text
+             * and other react components.
+             */
             return (
               <motion.g
                 key={`layer-${index}`}

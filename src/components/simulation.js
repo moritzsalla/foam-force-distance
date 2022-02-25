@@ -9,7 +9,13 @@ import { data } from '../data/';
 import * as d3 from 'd3';
 
 export const d3Sim = () => {
-  // calling forceSimulation class starts similation
+  /**
+   * @note
+   * calling forceSimulation class auto-runs similation until
+   * the simulation is cold (no more forces to equalise).
+   * **stop()** stops the simulation.
+   * **tick()** calls the ticker a set number of times.
+   */
   const simulation = forceSimulation()
     .stop() // stops the simulation
     .nodes(data.nodes)
@@ -23,18 +29,18 @@ export const d3Sim = () => {
     .force('center', forceManyBody().strength(-50))
     .force('x', forceX().strength())
     .force('y', forceY().strength())
-    .tick(200); // calls the ticker 200 times
-  // .on('tick', () => console.log('tick'));
+    .tick(200)
+    .on('tick', () => console.log('tick'));
 
   return {
     data: data,
 
+    /**
+     * @todo this could make use of the dom refs to target
+     * specific elements in the future. For now, we are binding
+     * the simulation to arbitrary svg groups.
+     */
     update: (nodes) => {
-      /**
-       * this could make use of the dom refs to target specific elements in the future.
-       * for now, we are binding the simulation to arbitrary svg groups
-       */
-
       d3.selectAll('g')
         .data(data.nodes)
         .attr('transform', ({ x, y }) => {
