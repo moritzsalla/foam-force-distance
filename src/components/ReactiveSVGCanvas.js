@@ -1,12 +1,21 @@
-import { useDrag } from '@use-gesture/react';
-import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { useEffect, useRef } from 'react';
-import { data as dataset } from '../data/index';
+import { motion } from 'framer-motion';
+import { createRef, useEffect, useMemo, useRef } from 'react';
 import '../styles.css';
-import { graphProgram } from './graphProgram';
+import { d3Sim } from './simulation';
 import Tile from './Tile';
 
 const ZOOM_LEVEL = 3;
+
+const Dot = ({ d = 20 }) => (
+  <rect
+    className='center-dot'
+    width={d}
+    height={d}
+    fill='red'
+    x={-d / 2}
+    y={-d / 2}
+  />
+);
 
 /**
  * Component state handled by react.
@@ -16,21 +25,33 @@ const ZOOM_LEVEL = 3;
  * @note D3 works implicitly
  */
 const ReactiveSVGCanvas = () => {
-  // storing mutated data in ref to persist between renders
-  const graphRef = useRef(graphProgram(dataset));
+  const {
+    current: { data, update, destroy },
+  } = useRef(d3Sim());
 
-  // cleanup
-  useEffect(() => graphRef.current?.cleanup(), [graphRef]);
+  const nodeRefs = useMemo(() => {
+    const refs = [];
+    /* eslint-disable no-unused-expressions */
+    data?.nodes?.forEach(({ id }) => {
+      refs[id] = createRef(null);
+    });
+    return refs;
+  }, [data]);
 
-  const x = useSpring(0, { stiffness: 300, damping: 30 });
-  const y = useSpring(0, { stiffness: 300, damping: 30 });
-  const normX = useTransform(x, [0, window.innerWidth * 2], [-100, 100]);
-  const normY = useTransform(y, [0, window.innerHeight * 2], [-100, 100]);
+  useEffect(() => {
+    update(nodeRefs);
+    return () => destroy();
+  }, [nodeRefs, update, destroy]);
 
-  const bind = useDrag(({ xy }) => {
-    x.set(xy[0]);
-    y.set(xy[1]);
-  });
+  // const x = useSpring(0, { stiffness: 300, damping: 30 });
+  // const y = useSpring(0, { stiffness: 300, damping: 30 });
+  // const normX = useTransform(x, [0, window.innerWidth * 2], [-100, 100]);
+  // const normY = useTransform(y, [0, window.innerHeight * 2], [-100, 100]);
+
+  // const bind = useDrag(({ xy }) => {
+  //   x.set(xy[0]);
+  //   y.set(xy[1]);
+  // });
 
   // for 1 / 1 zoom level
   // const viewBox = [
@@ -48,53 +69,45 @@ const ReactiveSVGCanvas = () => {
   ];
 
   return (
-    <section className='canvas' {...bind()}>
+    <section className='canvas'>
       <motion.div
         className='canvas-draggable-inner'
         // style={{ x: normX, y: normY }}
       >
         <motion.svg className='svg' viewBox={viewBox}>
           {/* link layer */}
-          {graphRef.current?.links?.map(({ source, target }, index) => (
-            <motion.line
+          {data?.links?.map(({ source, target }, index) => (
+            <line
               key={`link-${index}`}
               className='line-link'
               stroke='grey'
-              animate={{
-                x1: source.x,
-                y1: source.y,
-                x2: target.x,
-                y2: target.y,
-              }}
+              x1={source.x}
+              y1={source.y}
+              x2={target.x}
+              y2={target.y}
             />
           ))}
 
           {/* component layer */}
-          {graphRef.current?.nodes?.map(({ id, x, y }) => {
+          {data?.nodes?.map(({ id, x, y }, index) => {
             const boxWidth = 200;
             const boxHeight = 200;
-
             return (
               <motion.g
-                key={`layer-${id}`}
+                key={`layer-${index}`}
+                ref={nodeRefs[id]}
                 className='layer'
-                animate={{ x, y }}
               >
                 <foreignObject
-                  width={boxWidth}
-                  height={boxHeight}
                   x={-boxWidth / 2}
                   y={-boxHeight / 2}
+                  width={boxWidth}
+                  height={boxHeight}
                 >
-                  <Tile key={`node-${id}`} text={id} />
+                  <Tile key={`node-${id}`} />
                 </foreignObject>
 
-                {/* <rect
-                className='center-dot'
-                width='5px'
-                height='5px'
-                fill='red'
-              /> */}
+                <Dot />
               </motion.g>
             );
           })}

@@ -1,4 +1,4 @@
-const iterations = 20;
+const iterations = 10;
 const nGroups = 4;
 
 export const data = {
