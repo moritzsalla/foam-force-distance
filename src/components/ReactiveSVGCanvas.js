@@ -68,6 +68,13 @@ const ReactiveSVGCanvas = () => {
 
     const simulation = forceSimulation()
       .nodes(data.nodes)
+      .force('bounds', () => {
+        for (let i = 0, n = data.nodes.length, node, k = 0.01; i < n; ++i) {
+          node = data.nodes[i];
+          node.vx -= node.x * k;
+          node.vy -= node.y * k;
+        }
+      })
       .force(
         'link',
         forceLink(data.links)
