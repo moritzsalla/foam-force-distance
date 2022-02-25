@@ -13,7 +13,7 @@ body {
   border-color: white;
   height: 100vh;
   width: 100vw;
-  outline: 1px solid red;
+  outline: thin solid red;
   overflow: hidden;
 }
 
@@ -30,7 +30,7 @@ body {
 
 .tile {
   box-sizing: border-box;
-  border: 1px solid white;
+  border: thin solid white;
   background: black;
   padding: 0.5rem;
   width: 100%;
