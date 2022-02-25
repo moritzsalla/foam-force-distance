@@ -5,7 +5,6 @@ import {
   forceManyBody,
   forceSimulation,
 } from 'd3-force';
-import { motion } from 'framer-motion';
 import { useEffect } from 'react';
 import { data } from '../data/';
 import '../styles.css';
@@ -97,20 +96,20 @@ const ReactiveSVGCanvas = () => {
 
   return (
     <section className='canvas'>
-      <motion.div className='canvas-draggable-inner'>
-        <motion.svg className='svg' viewBox={viewBox}>
+      <div className='canvas-draggable-inner'>
+        <svg className='svg' viewBox={viewBox}>
           {/* link layer */}
           {data?.links?.map((_, index) => (
             <line key={`link-${index}`} className='line-link' stroke='white' />
           ))}
 
           {/* component layer */}
-          {data?.nodes?.map(({ id, group, ...props }, index) => {
+          {data?.nodes?.map(({ id, group }, index) => {
             const boxWidth = 100;
             const boxHeight = 100;
 
             return (
-              <motion.g key={`layer-${index}`} className='layer'>
+              <g key={`layer-${index}`} className='layer'>
                 <foreignObject
                   x={-boxWidth * 0.5}
                   y={-boxHeight * 0.5}
@@ -119,11 +118,11 @@ const ReactiveSVGCanvas = () => {
                 >
                   <Tile key={`node-${id}`} text={group} />
                 </foreignObject>
-              </motion.g>
+              </g>
             );
           })}
-        </motion.svg>
-      </motion.div>
+        </svg>
+      </div>
     </section>
   );
 };
