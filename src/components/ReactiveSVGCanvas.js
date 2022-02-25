@@ -74,9 +74,9 @@ const ReactiveSVGCanvas = () => {
           .id((d) => d.id)
           .strength(0.01)
       )
-      .force('charge', forceManyBody().strength(-300))
-      .force('collide', forceCollide().radius(100).iterations(1))
-      .force('center', forceManyBody().strength(200))
+      .force('charge', forceManyBody().strength(300))
+      .force('collide', forceCollide().radius(150).iterations(1))
+      .force('center', forceManyBody().strength(100))
       .on('tick', ticked);
 
     return () => simulation.stop();
