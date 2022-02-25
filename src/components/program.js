@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import {
+  forceCenter,
   forceCollide,
   forceLink,
   forceManyBody,
@@ -24,7 +25,7 @@ const program = () => {
       .attr('x2', ({ target }) => target.x)
       .attr('y2', ({ target }) => target.y)
       .style('stroke', function ({ value }) {
-        return value === 1 ? 'red' : 'white';
+        return value === 0 ? 'red' : 'white';
       })
       .call(drag(simulation));
   };
@@ -35,17 +36,18 @@ const program = () => {
       'link',
       forceLink(data.links)
         .id((d) => d.id)
-        .strength(0.01)
+        .strength(0.1)
     )
     .force('charge', forceManyBody().strength(300))
-    .force('collide', forceCollide().radius(150).iterations(1))
-    .force('bounds', () => {
-      for (let i = 0, n = data.nodes.length, node, k = 0.01; i < n; ++i) {
-        node = data.nodes[i];
-        node.vx -= node.x * k;
-        node.vy -= node.y * k;
-      }
-    })
+    .force('collide', forceCollide().radius(200).iterations(1).strength(1))
+    .force('center', forceCenter().strength(0.01))
+    // .force('bounds', () => {
+    //   for (let i = 0, n = data.nodes.length, node, k = 0.01; i < n; ++i) {
+    //     node = data.nodes[i];
+    //     node.vx -= node.x * k;
+    //     node.vy -= node.y * k;
+    //   }
+    // })
     .on('tick', ticked);
 
   return {
