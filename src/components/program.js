@@ -1,5 +1,4 @@
 import * as d3 from 'd3';
-import { svg } from 'd3';
 import {
   forceCenter,
   forceCollide,
@@ -8,7 +7,6 @@ import {
   forceSimulation,
 } from 'd3-force';
 import { data } from '../data/';
-import { drag, zoomed } from '../utils/helpers';
 
 const program = () => {
   const ticked = () => {
@@ -34,7 +32,7 @@ const program = () => {
   };
 
   // ------ svg ------
-  // https://observablehq.com/@d3/drag-zoom?collection=@d3/d3-drag
+
   d3.select('svg')
     .attr('viewBox', [
       -window.innerWidth * 0.5,
@@ -71,13 +69,6 @@ const program = () => {
     .force('charge', forceManyBody().strength(300))
     .force('collide', forceCollide().radius(200).iterations(1).strength(1))
     .force('center', forceCenter().strength(0.01))
-    // .force('bounds', () => {
-    //   for (let i = 0, n = data.nodes.length, node, k = 0.01; i < n; ++i) {
-    //     node = data.nodes[i];
-    //     node.vx -= node.x * k;
-    //     node.vy -= node.y * k;
-    //   }
-    // })
     .on('tick', ticked);
 
   return {
