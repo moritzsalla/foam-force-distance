@@ -29,12 +29,18 @@ export const d3Sim = () => {
   return {
     data: data,
 
-    update: () => {
+    update: (nodes) => {
+      /**
+       * this could make use of the dom refs to target specific elements in the future.
+       * for now, we are binding the simulation to arbitrary svg groups
+       */
+
       d3.selectAll('g')
         .data(data.nodes)
         .attr('transform', ({ x, y }) => {
           return `translate(${x}, ${y})`;
         });
+
       d3.selectAll('line')
         .data(data.links)
         .attr('x1', ({ source }) => source.x)

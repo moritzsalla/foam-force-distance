@@ -28,7 +28,7 @@ const ReactiveSVGCanvas = () => {
   }, [data]);
 
   useEffect(() => {
-    update();
+    update(nodeRefs);
     return () => destroy();
   }, [nodeRefs, update, destroy]);
 
