@@ -22,7 +22,7 @@ const program = () => {
     window.innerHeight,
   ];
 
-  const svg = d3.select('svg').attr('viewBox', viewbox);
+  const svg = d3.select('svg');
   const links = d3.selectAll('line.line-link').data(data.links);
   const container = d3.select('g.inner-container');
   const nodes = d3.selectAll('g.layer');
@@ -40,7 +40,7 @@ const program = () => {
       .style('stroke', (value) => (value === 0 ? 'red' : 'white'));
   };
 
-  svg.call(
+  svg.attr('viewBox', viewbox).call(
     d3
       .zoom()
       .extent([[0, 0], viewbox])
