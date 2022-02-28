@@ -2,16 +2,28 @@ import ButtonTile from 'components/ButtonTile';
 import program from 'components/forceDistanceGraph/program';
 import ImageTile from 'components/ImageTile';
 import QuoteTile from 'components/QuoteTile';
-import TextTile from 'components/TextTile';
+
 import { data } from 'data/';
 import { useEffect } from 'react';
 import 'styles/main.css';
 
 const GROUP_COMP_MAP = {
-  0: TextTile,
-  1: ImageTile,
-  2: ButtonTile,
-  3: QuoteTile,
+  0: {
+    Comp: ImageTile,
+    dimensions: [200, 200],
+  },
+  1: {
+    Comp: ImageTile,
+    dimensions: [100, 100],
+  },
+  2: {
+    Comp: ButtonTile,
+    dimensions: [100, 50],
+  },
+  3: {
+    Comp: QuoteTile,
+    dimensions: [300, 100],
+  },
 };
 
 /**
@@ -43,18 +55,16 @@ const ForceDistanceGraph = () => {
 
             {/* component layer */}
             {data?.nodes?.map(({ id, group }, index) => {
-              const Comp = GROUP_COMP_MAP[group] || (() => <></>);
-
-              const boxWidth = 100;
-              const boxHeight = 100;
+              const Comp = GROUP_COMP_MAP[group]?.Comp || (() => <></>);
+              const [width, height] = GROUP_COMP_MAP[group]?.dimensions || [];
 
               return (
                 <g key={`layer-${index}`} className='layer'>
                   <foreignObject
-                    x={-boxWidth * 0.5}
-                    y={-boxHeight * 0.5}
-                    width={boxWidth}
-                    height={boxHeight}
+                    x={-width * 0.5}
+                    y={-height * 0.5}
+                    width={width}
+                    height={height}
                   >
                     <Comp key={`node-${id}`} text={group} />
                   </foreignObject>
