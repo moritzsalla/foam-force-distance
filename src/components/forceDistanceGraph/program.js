@@ -10,6 +10,7 @@ import { data } from 'data/';
 
 const width = window.innerWidth;
 const height = window.innerHeight;
+const maxZoom = 2;
 
 const program = () => {
   const svg = d3
@@ -21,12 +22,12 @@ const program = () => {
 
   const zoomed = ({ transform }) => {
     container.attr('transform', transform);
-    // container.attr('stroke-width', 1 / transform.k);
+    container.attr('stroke-width', 1 / transform.k);
   };
 
   const zoom = d3
     .zoom()
-    .scaleExtent([1, 3])
+    .scaleExtent([1, maxZoom])
     .translateExtent([
       [-width, -height],
       [width, height],
@@ -51,7 +52,7 @@ const program = () => {
       .duration(750)
       .call(
         zoom.transform,
-        d3.zoomIdentity.scale(1.5).translate(-x, -y),
+        d3.zoomIdentity.scale(maxZoom).translate(-x, -y),
         d3.pointer(event, container.node())
       );
   };
