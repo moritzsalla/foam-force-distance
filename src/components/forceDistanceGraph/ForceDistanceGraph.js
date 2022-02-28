@@ -1,8 +1,18 @@
 import { useEffect } from 'react';
-import '../styles.css';
-import program from './program';
-import Tile from './Tile';
-import { data } from '../data/';
+import 'styles/main.css';
+import program from 'components/forceDistanceGraph/program';
+import { data } from 'data/';
+import TextTile from 'components/TextTile';
+import ImageTile from 'components/ImageTile';
+import ButtonTile from 'components/ButtonTile';
+import QuoteTile from 'components/QuoteTile';
+
+const GROUP_COMP_MAP = {
+  0: TextTile,
+  1: ImageTile,
+  2: ButtonTile,
+  3: QuoteTile,
+};
 
 /**
  * D3 simulation rendering react components.
@@ -11,7 +21,7 @@ import { data } from '../data/';
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
  * @example https://observablehq.com/@d3/drag-zoom?collection=@d3/d3-drag
  */
-const ReactiveSVGCanvas = () => {
+const ForceDistanceGraph = () => {
   useEffect(() => {
     program();
     return () => program.destroy();
@@ -36,6 +46,10 @@ const ReactiveSVGCanvas = () => {
               const boxWidth = 100;
               const boxHeight = 100;
 
+              console.log(group);
+
+              const Comp = GROUP_COMP_MAP[group] || (() => <></>);
+
               return (
                 <g key={`layer-${index}`} className='layer'>
                   <foreignObject
@@ -44,7 +58,7 @@ const ReactiveSVGCanvas = () => {
                     width={boxWidth}
                     height={boxHeight}
                   >
-                    <Tile key={`node-${id}`} text={group} />
+                    <Comp key={`node-${id}`} text={group} />
                   </foreignObject>
                 </g>
               );
@@ -56,4 +70,4 @@ const ReactiveSVGCanvas = () => {
   );
 };
 
-export default ReactiveSVGCanvas;
+export default ForceDistanceGraph;

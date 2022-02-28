@@ -6,7 +6,7 @@ import {
   forceManyBody,
   forceSimulation,
 } from 'd3-force';
-import { data } from '../data/';
+import { data } from 'data/';
 
 const program = () => {
   const ticked = () => {
@@ -73,7 +73,7 @@ const program = () => {
 
   return {
     destroy: () => {
-      return simulation.stop();
+      simulation.stop();
     },
   };
 };
