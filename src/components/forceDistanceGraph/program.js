@@ -15,54 +15,38 @@ import { data } from 'data/';
 /** @todo ease zoom, pan */
 
 const program = () => {
+  const viewbox = [
+    -window.innerWidth * 0.5,
+    -window.innerHeight * 0.5,
+    window.innerWidth,
+    window.innerHeight,
+  ];
+
+  const svg = d3.select('svg').attr('viewBox', viewbox);
+  const links = d3.selectAll('line.line-link').data(data.links);
+  const container = d3.select('g.inner-container');
+  const nodes = d3.selectAll('g.layer');
+
   const ticked = () => {
-    // ------ group layer ------
-
-    d3.selectAll('g.layer')
+    nodes
       .data(data.nodes)
-      .attr('transform', ({ x, y }) => {
-        return `translate(${x}, ${y})`;
-      });
+      .attr('transform', ({ x, y }) => `translate(${x}, ${y})`);
 
-    // ------ line layer ------
-
-    d3.selectAll('line.line-link')
-      .data(data.links)
+    links
       .attr('x1', ({ source }) => source.x)
       .attr('y1', ({ source }) => source.y)
       .attr('x2', ({ target }) => target.x)
       .attr('y2', ({ target }) => target.y)
-      .style('stroke', function ({ value }) {
-        return value === 0 ? 'red' : 'white';
-      });
+      .style('stroke', (value) => (value === 0 ? 'red' : 'white'));
   };
 
-  // ------ svg ------
-
-  d3.select('svg')
-    .attr('viewBox', [
-      -window.innerWidth * 0.5,
-      -window.innerHeight * 0.5,
-      window.innerWidth,
-      window.innerHeight,
-    ])
-    .call(
-      d3
-        .zoom()
-        .extent([
-          [0, 0],
-          [
-            -window.innerWidth * 0.5,
-            -window.innerHeight * 0.5,
-            window.innerWidth,
-            window.innerHeight,
-          ],
-        ])
-        .scaleExtent([1, 8])
-        .on('zoom', ({ transform }) => {
-          d3.select('g.inner-container').attr('transform', transform);
-        })
-    );
+  svg.call(
+    d3
+      .zoom()
+      .extent([[0, 0], viewbox])
+      .scaleExtent([1, 8])
+      .on('zoom', ({ transform }) => container.attr('transform', transform))
+  );
 
   const simulation = forceSimulation()
     .nodes(data.nodes)
