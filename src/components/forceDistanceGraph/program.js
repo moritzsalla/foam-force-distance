@@ -8,60 +8,57 @@ import {
 } from 'd3-force';
 import { data } from 'data/';
 
-const viewbox = [
-  -window.innerWidth * 0.5,
-  -window.innerHeight * 0.5,
-  window.innerWidth,
-  window.innerHeight,
-];
+const width = window.innerWidth;
+const height = window.innerHeight;
 
 const program = () => {
-  let FOCUS = false;
-
-  const svg = d3.select('svg').attr('viewBox', viewbox);
+  const svg = d3
+    .select('svg')
+    .attr('viewBox', [-width / 2, -height / 2, width, height]);
   const links = d3.selectAll('line.line-link').data(data.links);
   const container = d3.select('g.inner-container');
   const nodes = d3.selectAll('g.layer');
 
   const zoomed = ({ transform }) => {
-    console.log(transform);
     container.attr('transform', transform);
-    container.attr('stroke-width', 1 / transform.k);
+    // container.attr('stroke-width', 1 / transform.k);
   };
 
   const zoom = d3
     .zoom()
-    .extent([[0, 0], viewbox])
-    .scaleExtent([1, 8])
+    .scaleExtent([1, 3])
+    .translateExtent([
+      [-width, -height],
+      [width, height],
+    ])
     .on('zoom', zoomed);
 
-  const reset = (event, { x, y }) => {
-    event.stopPropagation();
-    FOCUS = false;
-
-    container.call(
-      zoom.transform,
-      d3.zoomIdentity.translate(0, 0).scale(-2),
-      d3.zoomTransform(container.node())
-    );
+  const reset = () => {
+    svg
+      .transition()
+      .duration(750)
+      .call(
+        zoom.transform,
+        d3.zoomIdentity,
+        d3.zoomTransform(container.node()).invert([width * 0.5, height * 0.5])
+      );
   };
 
   const clicked = (event, { x, y }) => {
     event.stopPropagation();
-    FOCUS = true;
-
-    container.call(
-      zoom.transform,
-      d3.zoomIdentity.translate(x, y).scale(2),
-      d3.pointer(event, container.node())
-    );
+    svg
+      .transition()
+      .duration(750)
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.scale(1.5).translate(-x, -y),
+        d3.pointer(event, container.node())
+      );
   };
 
-  // svg.call(zoom);
-  nodes.attr('cursor', 'pointer').on('click', () => {
-    console.log(FOCUS);
-    return FOCUS ? reset() : clicked();
-  });
+  svg.call(zoom);
+  nodes.attr('cursor', 'pointer').on('click', clicked);
+  svg.on('click', reset);
 
   // ------- ticker -------
 
@@ -90,7 +87,7 @@ const program = () => {
     )
     .force('charge', forceManyBody().strength(300))
     .force('collide', forceCollide().radius(200).iterations(1).strength(1))
-    .force('center', forceCenter().strength(0.01))
+    .force('center', forceCenter().strength(1))
     .on('tick', ticked);
 
   return {
