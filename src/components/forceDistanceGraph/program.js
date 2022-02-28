@@ -8,24 +8,62 @@ import {
 } from 'd3-force';
 import { data } from 'data/';
 
-/** @todo links: hightlight group on click */
-
-/** @todo double check if links are in synch with ui */
-
-/** @todo ease zoom, pan */
+const viewbox = [
+  -window.innerWidth * 0.5,
+  -window.innerHeight * 0.5,
+  window.innerWidth,
+  window.innerHeight,
+];
 
 const program = () => {
-  const viewbox = [
-    -window.innerWidth * 0.5,
-    -window.innerHeight * 0.5,
-    window.innerWidth,
-    window.innerHeight,
-  ];
+  let FOCUS = false;
 
-  const svg = d3.select('svg');
+  const svg = d3.select('svg').attr('viewBox', viewbox);
   const links = d3.selectAll('line.line-link').data(data.links);
   const container = d3.select('g.inner-container');
   const nodes = d3.selectAll('g.layer');
+
+  const zoomed = ({ transform }) => {
+    console.log(transform);
+    container.attr('transform', transform);
+    container.attr('stroke-width', 1 / transform.k);
+  };
+
+  const zoom = d3
+    .zoom()
+    .extent([[0, 0], viewbox])
+    .scaleExtent([1, 8])
+    .on('zoom', zoomed);
+
+  const reset = (event, { x, y }) => {
+    event.stopPropagation();
+    FOCUS = false;
+
+    container.call(
+      zoom.transform,
+      d3.zoomIdentity.translate(0, 0).scale(-2),
+      d3.zoomTransform(container.node())
+    );
+  };
+
+  const clicked = (event, { x, y }) => {
+    event.stopPropagation();
+    FOCUS = true;
+
+    container.call(
+      zoom.transform,
+      d3.zoomIdentity.translate(x, y).scale(2),
+      d3.pointer(event, container.node())
+    );
+  };
+
+  // svg.call(zoom);
+  nodes.attr('cursor', 'pointer').on('click', () => {
+    console.log(FOCUS);
+    return FOCUS ? reset() : clicked();
+  });
+
+  // ------- ticker -------
 
   const ticked = () => {
     nodes
@@ -40,13 +78,7 @@ const program = () => {
       .style('stroke', (value) => (value === 0 ? 'red' : 'white'));
   };
 
-  svg.attr('viewBox', viewbox).call(
-    d3
-      .zoom()
-      .extent([[0, 0], viewbox])
-      .scaleExtent([1, 8])
-      .on('zoom', ({ transform }) => container.attr('transform', transform))
-  );
+  // ------- simulation -------
 
   const simulation = forceSimulation()
     .nodes(data.nodes)
