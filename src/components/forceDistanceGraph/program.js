@@ -59,6 +59,8 @@ const program = () => {
         d3.zoomIdentity.scale(maxZoom).translate(-x, -y),
         d3.pointer(event, container.node())
       );
+
+    /** @todo group highlighting */
   };
 
   svg.call(zoom);
