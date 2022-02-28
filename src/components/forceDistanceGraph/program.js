@@ -46,7 +46,11 @@ const program = () => {
   };
 
   const clicked = (event, { x, y }) => {
-    event.stopPropagation();
+    const { k } = d3.zoomTransform(container.node());
+    if (k !== maxZoom) {
+      event.stopPropagation();
+    }
+
     svg
       .transition()
       .duration(750)
