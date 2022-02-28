@@ -8,6 +8,12 @@ import {
 } from 'd3-force';
 import { data } from 'data/';
 
+/** @todo links: hightlight group on click */
+
+/** @todo double check if links are in synch with ui */
+
+/** @todo ease zoom, pan */
+
 const program = () => {
   const ticked = () => {
     // ------ group layer ------
@@ -73,7 +79,7 @@ const program = () => {
 
   return {
     destroy: () => {
-      simulation.stop();
+      return simulation.stop();
     },
   };
 };

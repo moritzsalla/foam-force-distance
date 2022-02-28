@@ -1,11 +1,11 @@
+import ButtonTile from 'components/ButtonTile';
+import program from 'components/forceDistanceGraph/program';
+import ImageTile from 'components/ImageTile';
+import QuoteTile from 'components/QuoteTile';
+import TextTile from 'components/TextTile';
+import { data } from 'data/';
 import { useEffect } from 'react';
 import 'styles/main.css';
-import program from 'components/forceDistanceGraph/program';
-import { data } from 'data/';
-import TextTile from 'components/TextTile';
-import ImageTile from 'components/ImageTile';
-import ButtonTile from 'components/ButtonTile';
-import QuoteTile from 'components/QuoteTile';
 
 const GROUP_COMP_MAP = {
   0: TextTile,
@@ -23,8 +23,8 @@ const GROUP_COMP_MAP = {
  */
 const ForceDistanceGraph = () => {
   useEffect(() => {
-    program();
-    return () => program.destroy();
+    const graphProgram = program();
+    return () => graphProgram.destroy();
   }, []);
 
   return (
@@ -43,12 +43,10 @@ const ForceDistanceGraph = () => {
 
             {/* component layer */}
             {data?.nodes?.map(({ id, group }, index) => {
+              const Comp = GROUP_COMP_MAP[group] || (() => <></>);
+
               const boxWidth = 100;
               const boxHeight = 100;
-
-              console.log(group);
-
-              const Comp = GROUP_COMP_MAP[group] || (() => <></>);
 
               return (
                 <g key={`layer-${index}`} className='layer'>
