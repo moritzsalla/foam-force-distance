@@ -10,7 +10,7 @@ import { data } from 'data/';
 
 const width = window.innerWidth;
 const height = window.innerHeight;
-const maxZoom = 2;
+const maxZoomLevel = 2;
 
 const program = () => {
   const svg = d3
@@ -20,19 +20,40 @@ const program = () => {
   const container = d3.select('g.inner-container');
   const nodes = d3.selectAll('g.layer');
 
+  // ---------- behaviour ----------
+
   const zoomed = ({ transform }) => {
     container.attr('transform', transform);
     container.attr('stroke-width', 1 / transform.k);
   };
 
+  const clicked = (event, { x, y }) => {
+    const z = getZoomLevel();
+    if (z !== maxZoomLevel) event.stopPropagation();
+    svg
+      .transition()
+      .duration(750)
+      .call(
+        zoom.transform,
+        d3.zoomIdentity.scale(maxZoomLevel).translate(-x, -y),
+        d3.pointer(event, container.node())
+      );
+  };
+
+  const wheeled = () => {
+    if (getZoomLevel() === maxZoomLevel) reset();
+  };
+
   const zoom = d3
     .zoom()
-    .scaleExtent([1, maxZoom])
+    .scaleExtent([1, maxZoomLevel])
     .translateExtent([
       [-width, -height],
       [width, height],
     ])
-    .on('zoom', zoomed);
+    .on('zoom', (event) => {
+      return zoomed(event);
+    });
 
   const reset = () => {
     svg
@@ -45,25 +66,13 @@ const program = () => {
       );
   };
 
-  const clicked = (event, { x, y }) => {
-    const { k } = d3.zoomTransform(container.node());
-    if (k !== maxZoom) {
-      event.stopPropagation();
-    }
+  svg
+    .call(zoom)
+    .on('zoom', () => console.log('zoom'))
+    .on('drag.start', () => console.log('drag start'))
+    .on('start', () => console.log('start'))
+    .on('wheel.zoom', wheeled);
 
-    svg
-      .transition()
-      .duration(750)
-      .call(
-        zoom.transform,
-        d3.zoomIdentity.scale(maxZoom).translate(-x, -y),
-        d3.pointer(event, container.node())
-      );
-
-    /** @todo group highlighting */
-  };
-
-  svg.call(zoom);
   nodes.attr('cursor', 'pointer').on('click', clicked);
   svg.on('click', reset);
 
@@ -96,6 +105,14 @@ const program = () => {
     .force('collide', forceCollide().radius(200).iterations(1).strength(1))
     .force('center', forceCenter().strength(1))
     .on('tick', ticked);
+
+  // ---------- utils ----------
+
+  const getZoomLevel = () => {
+    const elem = container.node();
+    const { k } = d3.zoomTransform(elem);
+    return k;
+  };
 
   return {
     destroy: () => {
