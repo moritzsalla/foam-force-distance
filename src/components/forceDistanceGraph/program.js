@@ -22,11 +22,6 @@ const program = () => {
 
   // ---------- behaviour ----------
 
-  const zoomed = ({ transform }) => {
-    container.attr('transform', transform);
-    container.attr('stroke-width', 1 / transform.k);
-  };
-
   const clicked = (event, { x, y }) => {
     const z = getZoomLevel();
     if (z !== maxZoomLevel) event.stopPropagation();
@@ -51,8 +46,12 @@ const program = () => {
       [-width, -height],
       [width, height],
     ])
-    .on('zoom', (event) => {
-      return zoomed(event);
+    .on('start', (event) => {
+      if (getZoomLevel() === maxZoomLevel) reset();
+    })
+    .on('zoom', ({ transform }) => {
+      container.attr('transform', transform);
+      container.attr('stroke-width', 1 / transform.k);
     });
 
   const reset = () => {
@@ -68,13 +67,10 @@ const program = () => {
 
   svg
     .call(zoom)
-    .on('zoom', () => console.log('zoom'))
-    .on('drag.start', () => console.log('drag start'))
-    .on('start', () => console.log('start'))
-    .on('wheel.zoom', wheeled);
+    .on('click', reset) // good
+    .on('wheel.zoom', wheeled); // good
 
   nodes.attr('cursor', 'pointer').on('click', clicked);
-  svg.on('click', reset);
 
   // ------- ticker -------
 
