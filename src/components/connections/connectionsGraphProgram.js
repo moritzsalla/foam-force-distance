@@ -34,9 +34,9 @@ class ConnectionsGraph {
     this.height = height || window.innerHeight;
 
     this.svg = d3.select('svg');
-    this.links = d3.selectAll('links');
-    this.container = d3.select('container');
-    this.nodes = d3.selectAll('nodes');
+    this.links = d3.selectAll('line');
+    this.container = d3.select('g');
+    this.nodes = d3.selectAll('foreignObject');
 
     this.init();
   }
