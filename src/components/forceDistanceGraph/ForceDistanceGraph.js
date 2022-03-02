@@ -46,11 +46,7 @@ const ForceDistanceGraph = () => {
           <g className='inner-container'>
             {/* link layer */}
             {data?.links?.map((_, index) => (
-              <line
-                key={`link-${index}`}
-                className='line-link'
-                stroke='white'
-              />
+              <line key={`link-${index}`} className='line-link' />
             ))}
 
             {/* component layer */}
