@@ -5,7 +5,28 @@ import QuoteTile from 'components/QuoteTile';
 
 import { data } from 'data/';
 import { useEffect } from 'react';
+import styled from 'styled-components';
 import 'styles/main.css';
+
+const Container = styled.div`
+  position: relative;
+  background: black;
+  color: white;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+`;
+
+const ContainerInner = styled.div`
+  position: absolute;
+  height: max-content;
+  width: max-content;
+`;
+
+const SVG = styled.svg`
+  height: 100vh;
+  width: 100vw;
+`;
 
 const GROUP_COMP_MAP = {
   0: {
@@ -40,13 +61,13 @@ const ForceDistanceGraph = () => {
   }, []);
 
   return (
-    <section className='canvas'>
-      <div className='canvas-draggable-inner'>
-        <svg className='svg'>
-          <g className='inner-container'>
+    <Container>
+      <ContainerInner>
+        <SVG>
+          <g>
             {/* link layer */}
             {data?.links?.map((_, index) => (
-              <line key={`link-${index}`} className='line-link' />
+              <line key={`link-${index}`} />
             ))}
 
             {/* component layer */}
@@ -55,22 +76,21 @@ const ForceDistanceGraph = () => {
               const [width, height] = GROUP_COMP_MAP[group]?.dimensions || [];
 
               return (
-                <g key={`layer-${index}`} className='layer'>
-                  <foreignObject
-                    x={-width * 0.5}
-                    y={-height * 0.5}
-                    width={width}
-                    height={height}
-                  >
-                    <Comp key={`node-${id}`} text={group} />
-                  </foreignObject>
-                </g>
+                <foreignObject
+                  key={`node-${index}`}
+                  x={-width * 0.5}
+                  y={-height * 0.5}
+                  width={width}
+                  height={height}
+                >
+                  <Comp key={`node-${id}`} text={group} />
+                </foreignObject>
               );
             })}
           </g>
-        </svg>
-      </div>
-    </section>
+        </SVG>
+      </ContainerInner>
+    </Container>
   );
 };
 

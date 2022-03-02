@@ -8,78 +8,98 @@ import {
 } from 'd3-force';
 import { data } from 'data/';
 
-const width = window.innerWidth;
-const height = window.innerHeight;
-const maxZoomLevel = 2;
-const strokeWidth = 1;
+const WIDTH = window.innerWidth;
+const HEIGHT = window.innerHeight;
+const MAX_ZOOM_LEVEL = 2;
+const STROKE_WIDTH = 1;
+const TRANSITION_DURATION = 550;
 
 const program = () => {
-  const svg = d3
-    .select('svg')
-    .attr('viewBox', [-width / 2, -height / 2, width, height]);
-  const links = d3.selectAll('line.line-link').data(data.links);
-  const container = d3.select('g.inner-container');
-  const nodes = d3.selectAll('g.layer');
+  const viewbox = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT];
+  const svg = d3.select('svg').attr('viewBox', viewbox);
+  const links = d3.selectAll('line').data(data.links);
+  const container = d3.select('g');
+  const nodes = d3.selectAll('foreignObject');
 
   // ---------- base styles ----------
 
   nodes.attr('cursor', 'pointer');
+  links.style('transition', 'stroke 0.5s ease');
   links.style('stroke', 'grey');
 
   // ---------- behaviour ----------
 
-  const clicked = (event, { x, y, group }) => {
+  const handleClicked = (event, { x, y, group }) => {
     links.style('stroke', ({ value }) => (value === group ? 'red' : 'grey'));
-    if (getZoomLevel() !== maxZoomLevel) event.stopPropagation();
+
+    if (getZoomLevel() !== MAX_ZOOM_LEVEL) {
+      event.stopPropagation();
+    }
 
     svg
       .transition()
-      .duration(750)
+      .duration(TRANSITION_DURATION)
       .call(
         zoom.transform,
-        d3.zoomIdentity.scale(maxZoomLevel).translate(-x, -y),
+        d3.zoomIdentity.scale(MAX_ZOOM_LEVEL).translate(-x, -y),
         d3.pointer(event, container.node())
       );
   };
 
-  const wheeled = () => {
-    if (getZoomLevel() === maxZoomLevel) reset();
+  const handleWheeled = () => {
+    if (getZoomLevel() === MAX_ZOOM_LEVEL) {
+      resetView();
+    }
+  };
+
+  const handleMouseOver = (_, { group }) => {
+    links.style('stroke', ({ value }) => {
+      return value === group ? 'red' : 'grey';
+    });
+  };
+
+  const handleMouseOut = () => {
+    links.style('stroke', 'grey');
   };
 
   const zoom = d3
     .zoom()
-    .scaleExtent([1, maxZoomLevel])
+    .scaleExtent([1, MAX_ZOOM_LEVEL])
     .translateExtent([
-      [-width, -height],
-      [width, height],
+      [-WIDTH, -HEIGHT],
+      [WIDTH, HEIGHT],
     ])
     .on('start', () => {
-      if (getZoomLevel() === maxZoomLevel) reset();
+      if (getZoomLevel() === MAX_ZOOM_LEVEL) resetView();
     })
     .on('zoom', ({ transform, sourceEvent }) => {
       if (sourceEvent?.type === 'mousemove') svg.attr('cursor', 'grabbing');
       container.attr('transform', transform);
-      container.attr('stroke-width', strokeWidth / transform.k);
+      container.attr('stroke-width', STROKE_WIDTH / transform.k);
     })
     .on('end', () => {
       svg.attr('cursor', 'auto');
     });
 
-  const reset = () => {
+  const resetView = () => {
     links.style('stroke', 'grey');
 
     svg
       .transition()
-      .duration(750)
+      .duration(TRANSITION_DURATION)
       .call(
         zoom.transform,
         d3.zoomIdentity,
-        d3.zoomTransform(container.node()).invert([width * 0.5, height * 0.5])
+        d3.zoomTransform(container.node()).invert([WIDTH * 0.5, HEIGHT * 0.5])
       );
   };
 
-  nodes.on('click', clicked);
-  svg.call(zoom).on('click', reset).on('wheel.zoom', wheeled);
+  svg.call(zoom);
+  svg.on('click', resetView);
+  svg.on('wheel.zoom', handleWheeled);
+  nodes.on('mouseover', handleMouseOver);
+  nodes.on('mouseout', handleMouseOut);
+  nodes.on('click', handleClicked);
 
   // ------- ticker -------
 
@@ -114,8 +134,7 @@ const program = () => {
 
   const getZoomLevel = () => {
     const elem = container.node();
-    const { k } = d3.zoomTransform(elem);
-    return k;
+    return d3.zoomTransform(elem)?.k;
   };
 
   return {
