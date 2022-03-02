@@ -14,6 +14,11 @@ const MAX_ZOOM_LEVEL = 2;
 const STROKE_WIDTH = 1;
 const TRANSITION_DURATION = 550;
 
+/**
+ * todo: zoom out on drag
+ * todo: highlight groups on zoom level 2
+ */
+
 const program = () => {
   const viewbox = [-WIDTH / 2, -HEIGHT / 2, WIDTH, HEIGHT];
   const svg = d3.select('svg').attr('viewBox', viewbox);
@@ -27,10 +32,39 @@ const program = () => {
   links.style('transition', 'stroke 0.5s ease');
   links.style('stroke', 'grey');
 
+  // ------- simulation -------
+
+  const ticked = () => {
+    nodes
+      .data(data.nodes)
+      .attr('transform', ({ x, y }) => `translate(${x}, ${y})`);
+
+    links
+      .attr('x1', ({ source }) => source.x)
+      .attr('y1', ({ source }) => source.y)
+      .attr('x2', ({ target }) => target.x)
+      .attr('y2', ({ target }) => target.y);
+  };
+
+  const simulation = forceSimulation()
+    .nodes(data.nodes)
+    .force(
+      'link',
+      forceLink(data.links)
+        .id(({ id }) => id)
+        .strength(0.025)
+    )
+    .force('charge', forceManyBody().strength(400))
+    .force('collide', forceCollide().radius(200).iterations(1).strength(1))
+    .force('center', forceCenter().strength(1))
+    .on('tick', ticked);
+
   // ---------- behaviour ----------
 
-  const handleClicked = (event, { x, y, group }) => {
-    links.style('stroke', ({ value }) => (value === group ? 'red' : 'grey'));
+  const handleClicked = (event, { x, y, group: nodeGroup }) => {
+    links.style('stroke', ({ linkGroup }) =>
+      linkGroup === nodeGroup ? 'red' : 'grey'
+    );
 
     if (getZoomLevel() !== MAX_ZOOM_LEVEL) {
       event.stopPropagation();
@@ -52,9 +86,9 @@ const program = () => {
     }
   };
 
-  const handleMouseOver = (_, { group }) => {
-    links.style('stroke', ({ value }) => {
-      return value === group ? 'red' : 'grey';
+  const handleMouseOver = (_, { group: nodeGroup }) => {
+    links.style('stroke', ({ group: linkGroup }) => {
+      return linkGroup === nodeGroup ? 'red' : 'grey';
     });
   };
 
@@ -70,7 +104,7 @@ const program = () => {
       [WIDTH, HEIGHT],
     ])
     .on('start', () => {
-      if (getZoomLevel() === MAX_ZOOM_LEVEL) resetView();
+      // if (getZoomLevel() !== 0) resetView();
     })
     .on('zoom', ({ transform, sourceEvent }) => {
       if (sourceEvent?.type === 'mousemove') svg.attr('cursor', 'grabbing');
@@ -101,40 +135,11 @@ const program = () => {
   nodes.on('mouseout', handleMouseOut);
   nodes.on('click', handleClicked);
 
-  // ------- ticker -------
-
-  const ticked = () => {
-    nodes
-      .data(data.nodes)
-      .attr('transform', ({ x, y }) => `translate(${x}, ${y})`);
-
-    links
-      .attr('x1', ({ source }) => source.x)
-      .attr('y1', ({ source }) => source.y)
-      .attr('x2', ({ target }) => target.x)
-      .attr('y2', ({ target }) => target.y);
-  };
-
-  // ------- simulation -------
-
-  const simulation = forceSimulation()
-    .nodes(data.nodes)
-    .force(
-      'link',
-      forceLink(data.links)
-        .id(({ id }) => id)
-        .strength(0.1)
-    )
-    .force('charge', forceManyBody().strength(300))
-    .force('collide', forceCollide().radius(350).iterations(1).strength(1))
-    .force('center', forceCenter().strength(1))
-    .on('tick', ticked);
-
   // ---------- utils ----------
 
   const getZoomLevel = () => {
     const elem = container.node();
-    return d3.zoomTransform(elem)?.k;
+    return Math.round(d3.zoomTransform(elem)?.k);
   };
 
   return {

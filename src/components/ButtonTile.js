@@ -8,7 +8,7 @@ const Button = styled.button`
 `;
 
 const ButtonTile = ({ text }) => (
-  <Button onClick={() => alert('clicked')}>Press me!</Button>
+  <Button onClick={() => alert('clicked')}>Check out more</Button>
 );
 
 export default ButtonTile;

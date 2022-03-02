@@ -28,23 +28,43 @@ const SVG = styled.svg`
   width: 100vw;
 `;
 
-const GROUP_COMP_MAP = {
-  0: {
-    Comp: ImageTile,
+const COMP_TYPES = {
+  button: {
+    Comp: ButtonTile,
     dimensions: [200, 200],
   },
-  1: {
+  image: {
     Comp: ImageTile,
     dimensions: [100, 100],
   },
-  2: {
-    Comp: ButtonTile,
-    dimensions: [100, 50],
-  },
-  3: {
+  quote: {
     Comp: QuoteTile,
     dimensions: [300, 100],
   },
+};
+
+const LinkLayer = ({ links = [] }) => {
+  return links.map((_, index) => {
+    return <line key={`link-${index}`} />;
+  });
+};
+
+const NodeLayer = ({ nodes = [] }) => {
+  return nodes.map(({ type, group }, index) => {
+    const Comp = COMP_TYPES[type]?.Comp || (() => <></>);
+    const [width, height] = COMP_TYPES[type]?.dimensions || [];
+    return (
+      <foreignObject
+        key={`node-${index}`}
+        x={-width * 0.5}
+        y={-height * 0.5}
+        width={width}
+        height={height}
+      >
+        <Comp text={group} />
+      </foreignObject>
+    );
+  });
 };
 
 /**
@@ -65,28 +85,8 @@ const ForceDistanceGraph = () => {
       <ContainerInner>
         <SVG>
           <g>
-            {/* link layer */}
-            {data?.links?.map((_, index) => (
-              <line key={`link-${index}`} />
-            ))}
-
-            {/* component layer */}
-            {data?.nodes?.map(({ group }, index) => {
-              const Comp = GROUP_COMP_MAP[group]?.Comp || (() => <></>);
-              const [width, height] = GROUP_COMP_MAP[group]?.dimensions || [];
-
-              return (
-                <foreignObject
-                  key={`node-${index}`}
-                  x={-width * 0.5}
-                  y={-height * 0.5}
-                  width={width}
-                  height={height}
-                >
-                  <Comp text={group} />
-                </foreignObject>
-              );
-            })}
+            <LinkLayer links={data?.links} />
+            <NodeLayer nodes={data?.nodes} />
           </g>
         </SVG>
       </ContainerInner>

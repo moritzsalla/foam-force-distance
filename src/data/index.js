@@ -1,18 +1,64 @@
-const iterations = 10;
-const nGroups = 4;
+const nodes = [
+  // group 1
+  {
+    group: 1,
+    type: 'button',
+    id: 'article-alec-soth',
+  },
+  {
+    group: 1,
+    type: 'image',
+    id: 'podcast-my-podcast',
+  },
+  {
+    group: 1,
+    type: 'quote',
+    id: 'quote-alec-soth',
+  },
+  // group 2
+  {
+    group: 2,
+    type: 'image',
+    id: 'image-purgatory-1',
+  },
+  {
+    group: 2,
+    type: 'image',
+    id: 'image-purgatory-2',
+  },
+  {
+    group: 2,
+    type: 'image',
+    id: 'image-foam',
+  },
+];
+
+const links = [
+  // group 1
+  {
+    group: 1,
+    source: 'article-alec-soth',
+    target: 'podcast-my-podcast',
+  },
+  {
+    group: 1,
+    source: 'article-alec-soth',
+    target: 'quote-alec-soth',
+  },
+  // group 2
+  {
+    group: 2,
+    source: 'image-purgatory-1',
+    target: 'image-foam',
+  },
+  {
+    group: 2,
+    source: 'image-purgatory-1',
+    target: 'image-purgatory-2',
+  },
+];
 
 export const data = {
-  nodes: [...Array(iterations)].map((a, i) => {
-    return {
-      id: `name${i}`,
-      group: Math.floor(Math.random() * nGroups),
-    };
-  }),
-  links: [...Array(iterations)].map((_, i) => {
-    return {
-      source: `name${Math.floor(Math.random() * iterations)}`,
-      target: `name${Math.floor(Math.random() * iterations)}`,
-      value: Math.floor(Math.random() * nGroups),
-    };
-  }),
+  nodes,
+  links,
 };
