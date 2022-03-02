@@ -7,36 +7,36 @@ import {
   forceSimulation,
 } from 'd3-force';
 
-/**
- * todo: zoom out on drag
- * todo: highlight groups on zoom level 2
- */
-
 class ConnectionsGraph {
   #simulation = {};
   #maxZoomLevel = 2;
   #strokeWidth = 1;
   #transitionDuration = 550;
 
-  constructor({
-    data,
-    width,
-    height,
-    targetElems: {
-      svg = 'svg',
-      container = 'g',
-      links = 'line',
-      nodes = 'foreignObject',
-    } = {},
-  }) {
+  /**
+   *  * D3 simulation rendering react components.
+   * @note goal is to outsource the position updates to the simulation
+   * @example https://github.com/d3/d3-force
+   * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
+   * @example https://observablehq.com/@d3/drag-zoom?collection=@d3/d3-drag
+   * @param {{
+   *  width: number,
+   *  height: number,
+   *  data: {
+   *   nodes: Object[],
+   *   links: Object[]
+   *  },
+   * }} params
+   */
+  constructor({ data, width, height }) {
     this.data = data;
     this.width = width || window.innerWidth;
     this.height = height || window.innerHeight;
 
-    this.svg = d3.select(svg);
-    this.links = d3.selectAll(links);
-    this.container = d3.select(container);
-    this.nodes = d3.selectAll(nodes);
+    this.svg = d3.select('svg');
+    this.links = d3.selectAll('links');
+    this.container = d3.select('container');
+    this.nodes = d3.selectAll('nodes');
 
     this.init();
   }

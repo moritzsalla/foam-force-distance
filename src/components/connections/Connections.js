@@ -68,13 +68,6 @@ const NodeLayer = ({ nodes = [] }) => {
   });
 };
 
-/**
- * D3 simulation rendering react components.
- * @note goal is to outsource the position updates to the simulation
- * @example https://github.com/d3/d3-force
- * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
- * @example https://observablehq.com/@d3/drag-zoom?collection=@d3/d3-drag
- */
 const Connections = () => {
   useEffect(() => {
     const graph = new ConnectionsGraph({
