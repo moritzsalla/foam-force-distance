@@ -71,7 +71,7 @@ const ForceDistanceGraph = () => {
             ))}
 
             {/* component layer */}
-            {data?.nodes?.map(({ id, group }, index) => {
+            {data?.nodes?.map(({ group }, index) => {
               const Comp = GROUP_COMP_MAP[group]?.Comp || (() => <></>);
               const [width, height] = GROUP_COMP_MAP[group]?.dimensions || [];
 
@@ -83,7 +83,7 @@ const ForceDistanceGraph = () => {
                   width={width}
                   height={height}
                 >
-                  <Comp key={`node-${id}`} text={group} />
+                  <Comp text={group} />
                 </foreignObject>
               );
             })}
