@@ -18,15 +18,9 @@ const Container = styled.div`
   overflow: hidden;
 `;
 
-const ContainerInner = styled.div`
-  position: absolute;
-  height: max-content;
-  width: max-content;
-`;
-
 const SVG = styled.svg`
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
 `;
 
 const COMP_TYPES = {
@@ -80,14 +74,12 @@ const Connections = () => {
 
   return (
     <Container>
-      <ContainerInner>
-        <SVG>
-          <g>
-            <LinkLayer links={data?.links} />
-            <NodeLayer nodes={data?.nodes} />
-          </g>
-        </SVG>
-      </ContainerInner>
+      <SVG>
+        <g>
+          <LinkLayer links={data?.links} />
+          <NodeLayer nodes={data?.nodes} />
+        </g>
+      </SVG>
     </Container>
   );
 };
