@@ -1,12 +1,12 @@
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom';
-import ReactiveSVGCanvas from 'components/forceDistanceGraph/ForceDistanceGraph';
+import Connections from 'components/connections/Connections';
 
 const rootElement = document.getElementById('root');
 
 ReactDOM.render(
   <StrictMode>
-    <ReactiveSVGCanvas />
+    <Connections />
   </StrictMode>,
   rootElement
 );

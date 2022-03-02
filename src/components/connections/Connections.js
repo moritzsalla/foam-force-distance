@@ -1,5 +1,5 @@
 import ButtonTile from 'components/ButtonTile';
-import program from 'components/forceDistanceGraph/program';
+
 import ImageTile from 'components/ImageTile';
 import QuoteTile from 'components/QuoteTile';
 
@@ -7,6 +7,7 @@ import { data } from 'data/';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import 'styles/main.css';
+import ConnectionsGraph from './connectionsGraphProgram';
 
 const Container = styled.div`
   position: relative;
@@ -74,10 +75,14 @@ const NodeLayer = ({ nodes = [] }) => {
  * @example https://observablehq.com/@d3/temporal-force-directed-graph?collection=@d3/d3-force
  * @example https://observablehq.com/@d3/drag-zoom?collection=@d3/d3-drag
  */
-const ForceDistanceGraph = () => {
+const Connections = () => {
   useEffect(() => {
-    const graphProgram = program();
-    return () => graphProgram.destroy();
+    const graph = new ConnectionsGraph({
+      data: data,
+      width: window.innerWidth,
+      height: window.innerHeight,
+    });
+    return () => graph.destroy();
   }, []);
 
   return (
@@ -94,4 +99,4 @@ const ForceDistanceGraph = () => {
   );
 };
 
-export default ForceDistanceGraph;
+export default Connections;
