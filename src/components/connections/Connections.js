@@ -7,7 +7,7 @@ import { data } from 'data/';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import 'styles/main.css';
-import ConnectionsGraph from './connectionsGraphProgram';
+import ConnectionsGraph from './program';
 
 const Container = styled.div`
   position: relative;
