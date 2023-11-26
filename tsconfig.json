@@ -1,0 +1,37 @@
+{
+	"compilerOptions": {
+		"allowJs": false,
+		"allowUnreachableCode": false,
+		"alwaysStrict": true,
+		"baseUrl": "./src",
+		"esModuleInterop": true,
+		"verbatimModuleSyntax": true,
+		"forceConsistentCasingInFileNames": true,
+		"incremental": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"isolatedModules": true,
+		"jsx": "preserve",
+		"lib": ["dom", "es2022"],
+		"module": "esnext",
+		"moduleResolution": "node",
+		"noEmit": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"removeComments": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"stripInternal": false,
+		"target": "esnext",
+		"paths": {
+			"lib/*": ["src/"]
+		}
+	},
+	"exclude": ["node_modules"],
+	"include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.d.ts", "**/*.tsx"]
+}

@@ -1,0 +1,34 @@
+{
+	"nodes": [
+		{
+			"group": 1,
+			"type": "button",
+			"id": "article-alec-soth"
+		},
+		{
+			"group": 1,
+			"type": "image",
+			"id": "podcast-my-podcast"
+		},
+		{
+			"group": 1,
+			"type": "quote",
+			"id": "quote-alec-soth"
+		},
+		{
+			"group": 2,
+			"type": "image",
+			"id": "image-purgatory-1"
+		},
+		{
+			"group": 2,
+			"type": "image",
+			"id": "image-purgatory-2"
+		},
+		{
+			"group": 2,
+			"type": "image",
+			"id": "image-foam"
+		}
+	]
+}

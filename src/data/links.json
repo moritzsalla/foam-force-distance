@@ -1,0 +1,24 @@
+{
+	"links": [
+		{
+			"group": 1,
+			"source": "article-alec-soth",
+			"target": "podcast-my-podcast"
+		},
+		{
+			"group": 1,
+			"source": "article-alec-soth",
+			"target": "quote-alec-soth"
+		},
+		{
+			"group": 2,
+			"source": "image-purgatory-1",
+			"target": "image-foam"
+		},
+		{
+			"group": 2,
+			"source": "image-purgatory-1",
+			"target": "image-purgatory-2"
+		}
+	]
+}
