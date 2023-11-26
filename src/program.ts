@@ -198,10 +198,7 @@ class ConnectionsGenerator {
 					if (sourceEvent?.type === "mousemove")
 						this.#svg?.attr("cursor", "grabbing");
 					this.#container?.attr("transform", transform);
-					this.#container?.attr(
-						"stroke-width",
-						this.#strokeWidth / transform.k
-					);
+					this.#container?.attr("stroke-width", this.#strokeWidth / transform.k);
 				})
 				.on("end", () => {
 					this.#svg?.attr("cursor", "auto");
